@@ -5,7 +5,8 @@ name: Deploy static HTML from Java to Pages
 # 1. Cuando se hace push a la rama "main"
 # 2. Cuando se ejecuta manualmente desde la pestaña "Actions"
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches: ["main"]
   workflow_dispatch:
 
@@ -24,6 +25,7 @@ concurrency:
 jobs:
   # Job de construcción y despliegue
   build:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest   # Usa la última versión del runner Ubuntu en la nube
 
     steps:
@@ -60,6 +62,7 @@ jobs:
 
   # Job separado para el despliegue
   deploy:
+    if: github.event.pull_request.merged == true
     needs: build  # Este job se ejecuta solo si el job "build" fue exitoso
     runs-on: ubuntu-latest
     environment:
